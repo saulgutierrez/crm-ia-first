@@ -19,6 +19,7 @@ class InteractionController extends BaseController
 
     /**
      * List interactions with pagination.
+     * Agents only see their own interactions; admins see all.
      */
     public function index(): void
     {
@@ -28,6 +29,12 @@ class InteractionController extends BaseController
 
         $where = '1=1';
         $params = [];
+
+        // Agents only see their own interactions
+        if (!Session::isRole('admin')) {
+            $where .= ' AND i.created_by = :user_id';
+            $params['user_id'] = Session::userId();
+        }
 
         if ($type && in_array($type, ['call', 'email', 'meeting', 'note'])) {
             $where .= ' AND i.type = :type';

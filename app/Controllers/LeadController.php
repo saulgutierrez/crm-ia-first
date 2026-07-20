@@ -19,6 +19,7 @@ class LeadController extends BaseController
 
     /**
      * List leads with pagination and filters.
+     * Agents only see their assigned leads; admins see all.
      */
     public function index(): void
     {
@@ -28,6 +29,12 @@ class LeadController extends BaseController
 
         $where = 'l.deleted_at IS NULL';
         $params = [];
+
+        // Agents only see their assigned leads
+        if (!Session::isRole('admin')) {
+            $where .= ' AND l.assigned_to = :user_id';
+            $params['user_id'] = Session::userId();
+        }
 
         if ($status && in_array($status, ['new', 'contacted', 'qualified', 'proposal', 'won', 'lost'])) {
             $where .= ' AND l.status = :status';
@@ -66,11 +73,18 @@ class LeadController extends BaseController
 
     /**
      * Show create lead form.
+     * Agents can only assign leads to themselves.
      */
     public function create(): void
     {
         $clients = $this->db->query("SELECT id, company_name FROM clients WHERE deleted_at IS NULL ORDER BY company_name ASC")->fetchAll();
-        $agents = $this->db->query("SELECT id, name FROM users WHERE is_active = 1 ORDER BY name ASC")->fetchAll();
+        
+        // Agents can only assign to themselves; admins can assign to anyone
+        if (Session::isRole('admin')) {
+            $agents = $this->db->query("SELECT id, name FROM users WHERE is_active = 1 ORDER BY name ASC")->fetchAll();
+        } else {
+            $agents = $this->db->query("SELECT id, name FROM users WHERE id = " . (int) Session::userId() . " ORDER BY name ASC")->fetchAll();
+        }
 
         $this->render('leads/form', [
             'title' => 'Nueva Oportunidad',
@@ -145,10 +159,14 @@ class LeadController extends BaseController
 
         if (!$lead) {
             $this->redirect('/leads');
+        }            $clients = $this->db->query("SELECT id, company_name FROM clients WHERE deleted_at IS NULL ORDER BY company_name ASC")->fetchAll();
+        
+        // Agents can only assign to themselves
+        if (Session::isRole('admin')) {
+            $agents = $this->db->query("SELECT id, name FROM users WHERE is_active = 1 ORDER BY name ASC")->fetchAll();
+        } else {
+            $agents = $this->db->query("SELECT id, name FROM users WHERE id = " . (int) Session::userId() . " ORDER BY name ASC")->fetchAll();
         }
-
-        $clients = $this->db->query("SELECT id, company_name FROM clients WHERE deleted_at IS NULL ORDER BY company_name ASC")->fetchAll();
-        $agents = $this->db->query("SELECT id, name FROM users WHERE is_active = 1 ORDER BY name ASC")->fetchAll();
 
         $this->render('leads/form', [
             'title' => 'Editar Oportunidad',

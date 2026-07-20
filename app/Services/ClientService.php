@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repositories\ClientRepository;
 use App\Helpers\Pagination;
+use App\Helpers\Session;
 use App\Exceptions\HttpException;
 
 class ClientService extends BaseService
@@ -18,17 +19,28 @@ class ClientService extends BaseService
     }
 
     /**
+     * Get the owner filter for the current user.
+     * Agents can only see their own clients; admins see all.
+     */
+    private function getOwnerFilter(): ?int
+    {
+        return Session::isRole('admin') ? null : Session::userId();
+    }
+
+    /**
      * List clients with pagination and optional search.
      */
     public function list(int $page = 1, int $perPage = 15, string $search = ''): array
     {
+        $ownerId = $this->getOwnerFilter();
+
         $total = $search
-            ? $this->clientRepo->countSearch($search)
-            : $this->clientRepo->countActive();
+            ? $this->clientRepo->countSearch($search, $ownerId)
+            : $this->clientRepo->countActive($ownerId);
 
         $items = $search
-            ? $this->clientRepo->search($search, $page, $perPage)
-            : $this->clientRepo->findAllActive($page, $perPage);
+            ? $this->clientRepo->search($search, $page, $perPage, $ownerId)
+            : $this->clientRepo->findAllActive($page, $perPage, $ownerId);
 
         return [
             'items' => $items,

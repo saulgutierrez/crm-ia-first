@@ -12,6 +12,7 @@ use App\Controllers\InteractionController;
 use App\Controllers\TicketController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\AdminMiddleware;
+use App\Controllers\UserController;
 
 /*
  * Web Routes
@@ -22,6 +23,19 @@ use App\Middleware\AdminMiddleware;
 $r->addRoute('GET', '/login', [AuthController::class, 'showLoginForm']);
 $r->addRoute('POST', '/login', [AuthController::class, 'login']);
 $r->addRoute('GET', '/logout', [AuthController::class, 'logout']);
+
+// Admin-only: User management
+$r->addRoute('GET', '/users', [UserController::class, 'index', [AuthMiddleware::class, AdminMiddleware::class]]);
+$r->addRoute('GET', '/users/create', [UserController::class, 'create', [AuthMiddleware::class, AdminMiddleware::class]]);
+$r->addRoute('POST', '/users', [UserController::class, 'store', [AuthMiddleware::class, AdminMiddleware::class]]);
+$r->addRoute('GET', '/users/{id:\d+}/edit', [UserController::class, 'edit', [AuthMiddleware::class, AdminMiddleware::class]]);
+$r->addRoute('POST', '/users/{id:\d+}', [UserController::class, 'update', [AuthMiddleware::class, AdminMiddleware::class]]);
+$r->addRoute('POST', '/users/{id:\d+}/toggle-status', [UserController::class, 'toggleStatus', [AuthMiddleware::class, AdminMiddleware::class]]);
+
+// Export routes (admin-only)
+$r->addRoute('GET', '/export/clients', [App\Controllers\ExportController::class, 'clientsPdf', [AuthMiddleware::class, AdminMiddleware::class]]);
+$r->addRoute('GET', '/export/leads', [App\Controllers\ExportController::class, 'leadsPdf', [AuthMiddleware::class, AdminMiddleware::class]]);
+$r->addRoute('GET', '/export/dashboard', [App\Controllers\ExportController::class, 'dashboardPdf', [AuthMiddleware::class, AdminMiddleware::class]]);
 
 // Protected routes
 $r->addRoute('GET', '/', [DashboardController::class, 'index', [AuthMiddleware::class]]);
@@ -66,10 +80,4 @@ $r->addRoute('GET', '/tickets/{id:\d+}', [TicketController::class, 'show', [Auth
 $r->addRoute('GET', '/tickets/{id:\d+}/edit', [TicketController::class, 'edit', [AuthMiddleware::class]]);
 $r->addRoute('POST', '/tickets/{id:\d+}', [TicketController::class, 'update', [AuthMiddleware::class]]);
 $r->addRoute('POST', '/tickets/{id:\d+}/delete', [TicketController::class, 'destroy', [AuthMiddleware::class]]);
-
-// Export
-$r->addRoute('GET', '/export/clients', [App\Controllers\ExportController::class, 'clientsPdf', [AuthMiddleware::class]]);
-$r->addRoute('GET', '/export/leads', [App\Controllers\ExportController::class, 'leadsPdf', [AuthMiddleware::class]]);
-$r->addRoute('GET', '/export/dashboard', [App\Controllers\ExportController::class, 'dashboardPdf', [AuthMiddleware::class]]);
-
 

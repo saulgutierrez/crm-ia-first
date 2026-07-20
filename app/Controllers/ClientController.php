@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Services\ClientService;
 use App\Helpers\Pagination;
+use App\Helpers\Session;
 use App\Exceptions\HttpException;
 
 class ClientController extends BaseController
