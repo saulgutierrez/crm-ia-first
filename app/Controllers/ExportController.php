@@ -30,10 +30,13 @@ class ExportController extends BaseController
                 SELECT c.*, u.name AS owner_name
                 FROM clients c LEFT JOIN users u ON u.id = c.owner_id
                 WHERE c.deleted_at IS NULL
-                AND (c.company_name LIKE :term OR c.email LIKE :term OR c.industry LIKE :term)
+                AND (c.company_name LIKE :term1 OR c.email LIKE :term2 OR c.industry LIKE :term3)
                 ORDER BY c.company_name ASC
             ");
-            $stmt->execute(['term' => $like]);
+            $stmt->bindValue('term1', $like, \PDO::PARAM_STR);
+            $stmt->bindValue('term2', $like, \PDO::PARAM_STR);
+            $stmt->bindValue('term3', $like, \PDO::PARAM_STR);
+            $stmt->execute();
         } else {
             $stmt = $this->db->query("
                 SELECT c.*, u.name AS owner_name

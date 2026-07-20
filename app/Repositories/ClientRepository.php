@@ -81,12 +81,14 @@ class ClientRepository extends BaseRepository
             FROM {$this->table} c
             LEFT JOIN users u ON u.id = c.owner_id
             WHERE c.deleted_at IS NULL
-            AND (c.company_name LIKE :term OR c.email LIKE :term OR c.industry LIKE :term)
+            AND (c.company_name LIKE :term1 OR c.email LIKE :term2 OR c.industry LIKE :term3)
             " . ($ownerId !== null ? "AND c.owner_id = :owner_id" : "") . "
             ORDER BY c.created_at DESC
             LIMIT :limit OFFSET :offset
         ");
-        $stmt->bindValue('term', $like, \PDO::PARAM_STR);
+        $stmt->bindValue('term1', $like, \PDO::PARAM_STR);
+        $stmt->bindValue('term2', $like, \PDO::PARAM_STR);
+        $stmt->bindValue('term3', $like, \PDO::PARAM_STR);
         $stmt->bindValue('limit', $perPage, \PDO::PARAM_INT);
         $stmt->bindValue('offset', $offset, \PDO::PARAM_INT);
         if ($ownerId !== null) {
@@ -106,8 +108,8 @@ class ClientRepository extends BaseRepository
         $sql = "SELECT COUNT(*) AS total
             FROM {$this->table}
             WHERE deleted_at IS NULL
-            AND (company_name LIKE :term OR email LIKE :term OR industry LIKE :term)";
-        $params = ['term' => $like];
+            AND (company_name LIKE :term1 OR email LIKE :term2 OR industry LIKE :term3)";
+        $params = ['term1' => $like, 'term2' => $like, 'term3' => $like];
 
         if ($ownerId !== null) {
             $sql .= " AND owner_id = :owner_id";
