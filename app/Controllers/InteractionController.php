@@ -110,6 +110,54 @@ class InteractionController extends BaseController
     }
 
     /**
+     * Show edit interaction form.
+     */
+    public function edit(array $vars): void
+    {
+        $stmt = $this->db->prepare("SELECT * FROM interactions WHERE id = :id LIMIT 1");
+        $stmt->execute(['id' => (int) $vars['id']]);
+        $interaction = $stmt->fetch();
+
+        if (!$interaction) {
+            $this->redirect('/interactions');
+        }
+
+        $clients = $this->db->query("SELECT id, company_name FROM clients WHERE deleted_at IS NULL ORDER BY company_name ASC")->fetchAll();
+
+        $this->render('interactions/form', [
+            'title' => 'Editar Interacción',
+            'interaction' => $interaction,
+            'clients' => $clients,
+        ]);
+    }
+
+    /**
+     * Update an interaction.
+     */
+    public function update(array $vars): void
+    {
+        $this->validateCsrf();
+
+        $data = [
+            'client_id' => (int) ($_POST['client_id'] ?? 0),
+            'type' => $_POST['type'] ?? 'note',
+            'subject' => $_POST['subject'] ?? '',
+            'description' => $_POST['description'] ?? '',
+            'id' => (int) $vars['id'],
+        ];
+
+        $stmt = $this->db->prepare("
+            UPDATE interactions SET client_id = :client_id, type = :type,
+            subject = :subject, description = :description
+            WHERE id = :id
+        ");
+        $stmt->execute($data);
+
+        Session::flash('success', 'Interacción actualizada exitosamente.');
+        $this->redirect('/interactions');
+    }
+
+    /**
      * Show a single interaction with full details.
      */
     public function show(array $vars): void

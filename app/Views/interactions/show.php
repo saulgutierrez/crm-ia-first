@@ -6,10 +6,13 @@
             </a>
             <h2 class="text-2xl font-bold text-gray-800"><?= htmlspecialchars($interaction->subject) ?></h2>
         </div>
-        <form method="POST" action="/interactions/<?= $interaction->id ?>/delete" class="inline" onsubmit="return confirm('¿Eliminar esta interacción?')">
-            <?= $csrf_field ?>
-            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">Eliminar</button>
-        </form>
+        <div class="flex gap-2">
+            <a href="/interactions/<?= $interaction->id ?>/edit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">Editar</a>
+            <form method="POST" action="/interactions/<?= $interaction->id ?>/delete" class="inline" onsubmit="return confirm('¿Eliminar esta interacción?')">
+                <?= $csrf_field ?>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">Eliminar</button>
+            </form>
+        </div>
     </div>
 </div>
 

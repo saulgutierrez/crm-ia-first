@@ -71,6 +71,8 @@ $r->addRoute('GET', '/interactions', [InteractionController::class, 'index', [Au
 $r->addRoute('GET', '/interactions/create', [InteractionController::class, 'create', [AuthMiddleware::class]]);
 $r->addRoute('POST', '/interactions', [InteractionController::class, 'store', [AuthMiddleware::class]]);
 $r->addRoute('GET', '/interactions/{id:\d+}', [InteractionController::class, 'show', [AuthMiddleware::class]]);
+$r->addRoute('GET', '/interactions/{id:\d+}/edit', [InteractionController::class, 'edit', [AuthMiddleware::class]]);
+$r->addRoute('POST', '/interactions/{id:\d+}', [InteractionController::class, 'update', [AuthMiddleware::class]]);
 $r->addRoute('POST', '/interactions/{id:\d+}/delete', [InteractionController::class, 'destroy', [AuthMiddleware::class]]);
 
 // Tickets

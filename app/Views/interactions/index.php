@@ -52,6 +52,7 @@
                 <td class="px-5 py-3 text-sm text-gray-600"><?= htmlspecialchars($interaction->user_name ?? '-') ?></td>
                 <td class="px-5 py-3 text-sm text-gray-500"><?= date('d/m/Y H:i', strtotime($interaction->created_at)) ?></td>
                 <td class="px-5 py-3 text-right">
+                    <a href="/interactions/<?= $interaction->id ?>/edit" class="text-sm text-indigo-600 hover:text-indigo-800 mr-3">Editar</a>
                     <form method="POST" action="/interactions/<?= $interaction->id ?>/delete" class="inline" onsubmit="return confirm('¿Eliminar esta interacción?')">
                         <?= $csrf_field ?>
                         <button type="submit" class="text-sm text-red-600 hover:text-red-800">Eliminar</button>
