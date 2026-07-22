@@ -43,7 +43,11 @@
                         <?= $interaction->type === 'call' ? 'Llamada' : ($interaction->type === 'email' ? 'Correo' : ($interaction->type === 'meeting' ? 'Reunión' : 'Nota')) ?>
                     </span>
                 </td>
-                <td class="px-5 py-3 font-medium text-gray-800"><?= htmlspecialchars($interaction->subject) ?></td>
+                <td class="px-5 py-3">
+                    <a href="/interactions/<?= $interaction->id ?>" class="font-medium text-indigo-600 hover:text-indigo-800">
+                        <?= htmlspecialchars($interaction->subject) ?>
+                    </a>
+                </td>
                 <td class="px-5 py-3 text-sm text-gray-600"><?= htmlspecialchars($interaction->company_name) ?></td>
                 <td class="px-5 py-3 text-sm text-gray-600"><?= htmlspecialchars($interaction->user_name ?? '-') ?></td>
                 <td class="px-5 py-3 text-sm text-gray-500"><?= date('d/m/Y H:i', strtotime($interaction->created_at)) ?></td>

@@ -70,6 +70,7 @@ $r->addRoute('POST', '/leads/{id:\d+}/delete', [LeadController::class, 'destroy'
 $r->addRoute('GET', '/interactions', [InteractionController::class, 'index', [AuthMiddleware::class]]);
 $r->addRoute('GET', '/interactions/create', [InteractionController::class, 'create', [AuthMiddleware::class]]);
 $r->addRoute('POST', '/interactions', [InteractionController::class, 'store', [AuthMiddleware::class]]);
+$r->addRoute('GET', '/interactions/{id:\d+}', [InteractionController::class, 'show', [AuthMiddleware::class]]);
 $r->addRoute('POST', '/interactions/{id:\d+}/delete', [InteractionController::class, 'destroy', [AuthMiddleware::class]]);
 
 // Tickets

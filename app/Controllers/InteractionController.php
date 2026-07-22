@@ -110,6 +110,33 @@ class InteractionController extends BaseController
     }
 
     /**
+     * Show a single interaction with full details.
+     */
+    public function show(array $vars): void
+    {
+        $stmt = $this->db->prepare("
+            SELECT i.*, c.company_name, c.email AS client_email, c.phone AS client_phone,
+                   u.name AS user_name
+            FROM interactions i
+            JOIN clients c ON c.id = i.client_id
+            LEFT JOIN users u ON u.id = i.created_by
+            WHERE i.id = :id
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => (int) $vars['id']]);
+        $interaction = $stmt->fetch();
+
+        if (!$interaction) {
+            $this->redirect('/interactions');
+        }
+
+        $this->render('interactions/show', [
+            'title' => $interaction->subject,
+            'interaction' => $interaction,
+        ]);
+    }
+
+    /**
      * Delete an interaction.
      */
     public function destroy(array $vars): void
